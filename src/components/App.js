@@ -11,10 +11,13 @@ import Swap from './Swap';
 import Deposit from './Deposit';
 import Withdraw from './Withdraw';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Charts from './Charts';
 =======
 import Approve from './Approve';
 >>>>>>> 0381d4b7 (add liquidity and approve tabs)
+=======
+>>>>>>> af141fd4 (approve button at swap tab)
 
 import {
   loadProvider,
@@ -84,7 +87,6 @@ function App() {
             <Route exact path="/" element={<Swap />} />
             <Route path="/deposit" element={<Deposit />} />
             <Route path="/withdraw" element={<Withdraw />} />
-            <Route path="/approve" element={<Approve />} />
           </Routes>
         </HashRouter>
       </Container>
