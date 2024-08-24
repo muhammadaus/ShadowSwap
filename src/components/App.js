@@ -8,7 +8,6 @@ import Tabs from './Tabs';
 import Swap from './Swap';
 import Deposit from './Deposit';
 import Withdraw from './Withdraw';
-import Approve from './Approve';
 
 // Create a context for blockchain data
 export const BlockchainContext = createContext();
@@ -36,7 +35,6 @@ function App() {
             <Route exact path="/" element={<Swap />} />
             <Route path="/deposit" element={<Deposit />} />
             <Route path="/withdraw" element={<Withdraw />} />
-            <Route path="/approve" element={<Approve />} />
           </Routes>
         </HashRouter>
       </Container>
