@@ -13,6 +13,9 @@ const Tabs = () => {
       <LinkContainer to="/withdraw">
         <Nav.Link className="text-dark">Remove Liquidity</Nav.Link>
       </LinkContainer>
+      <LinkContainer to="/approve">
+        <Nav.Link className="text-dark">Approve</Nav.Link>
+      </LinkContainer>
     </Nav>
   );
 }
