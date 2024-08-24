@@ -29,7 +29,7 @@ describe('AMM', () => {
 
     // Deploy Token
     const Token = await ethers.getContractFactory('Token')
-    token1 = await Token.deploy('Dapp University', 'DAPP', '1000000') // 1 Million Tokens
+    token1 = await Token.deploy('ShadowToken', 'STKN', '1000000') // 1 Million Tokens
     token2 = await Token.deploy('USD Token', 'USD', '1000000') // 1 Million Tokens
 
     // Send tokens to liquidity provider

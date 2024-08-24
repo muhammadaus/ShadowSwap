@@ -5,7 +5,7 @@ module.exports = {
   solidity: "0.8.20",
   networks: {
     sepolia: {
-      url: `REPLACE_WITH_APIKEY`,
+      url: `https://gateway-api.cabinet-node.com/0db81d915acae383cf7b91896d80ce9d`,
       accounts: [`0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`]
     },
     scrollDevnet: {
