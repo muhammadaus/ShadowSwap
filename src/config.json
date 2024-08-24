@@ -1,0 +1,34 @@
+{
+  "31337": {
+    "dapp": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    },
+    "usd": {
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    },
+    "amm": {
+      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+    }
+  },
+  "11155111": {
+    "eth": {
+      "address": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
+    },
+    "usd": {
+      "address": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+    },
+    "amm": {
+      "address": "0x4401DeA0C875EF997cF0Cb942825487E28E25b12"
+    },
+    "11155111": {
+    "eth": {
+      "address": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
+    },
+    "usd": {
+      "address": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+    },
+    "amm": {
+      "address": "0x4401DeA0C875EF997cF0Cb942825487E28E25b12"
+    }
+  }
+}

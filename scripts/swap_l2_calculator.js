@@ -6,7 +6,6 @@ async function main() {
   // Replace this with the actual L1 token address you want to use
   const l1TokenAddress = "0x4401DeA0C875EF997cF0Cb942825487E28E25b12";
 
-  console.log("Deploying Calculator...");
   const calculatorAddress = "0x940760e3877B0AdfcCeF5Ca04882D9D125A8a8FF";
 
   console.log("Connecting to existing Calculator...");
