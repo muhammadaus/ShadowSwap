@@ -1,70 +1,60 @@
-import { useState, useContext } from 'react'
-import { BlockchainContext } from './App'
+import React, { useState, useContext } from 'react';
+import { BlockchainContext } from './App';
 import Card from 'react-bootstrap/Card';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
 
-const Withdraw = () => {
-  const [amount, setAmount] = useState('')
-  const { account } = useContext(BlockchainContext)
 
-  const withdrawHandler = (e) => {
-    e.preventDefault()
-    console.log('Withdraw amount:', amount)
-    // Here you would typically interact with the blockchain
-    // For now, we'll just log the value
-    setAmount('')
+import { ethers } from 'ethers'
+
+let ammContract = null;
+
+export const initializeContract = async () => {
+  if (typeof window.ethereum !== 'undefined') {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contractAddress = '0x5d4bf065A9ae8B5D8b9cb632C38c77d784d086Cc';
+    const contractABI = []; // Add your contract ABI here
+    ammContract = new ethers.Contract(contractAddress, contractABI, signer);
   }
+};
+
+export const getAmmContract = () => ammContract;
+
+
+const Approve = () => {
+  const [isApproved, setIsApproved] = useState(false);
+  const { account, amm } = useContext(BlockchainContext);
+
+  const handleApprove = async () => {
+    if (amm && account) {
+      try {
+        await ammContract.setSwapApproval("0xFC116bF2F327b8A0DFba8fB49a9Eb8BC041D165E", true);
+        setIsApproved(true);
+      } catch (error) {
+        console.error("Error approving swap:", error);
+      }
+    }
+  };
 
   return (
-    <div>
-      <Card style={{ maxWidth: '450px' }} className='mx-auto px-4'>
-        {account ? (
-          <Form onSubmit={withdrawHandler} style={{ maxWidth: '450px', margin: '50px auto' }}>
-            <Row>
-              <Form.Text className='text-end my-2' muted>
-                Shares: 0
-              </Form.Text>
-              <InputGroup>
-                <Form.Control
-                  type="number"
-                  placeholder="0"
-                  min="0.0"
-                  step="any"
-                  id="shares"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
-                <InputGroup.Text style={{ width: "100px" }} className="justify-content-center">
-                  Shares
-                </InputGroup.Text>
-              </InputGroup>
-            </Row>
-
-            <Row className='my-3'>
-              <Button type='submit' variant="dark">Withdraw</Button>
-            </Row>
-
-            <hr />
-
-            <Row>
-              <p><strong>EURC Balance:</strong> 0</p>
-              <p><strong>USDC Balance:</strong> 0</p>
-            </Row>
-          </Form>
-        ) : (
-          <p
-            className='d-flex justify-content-center align-items-center'
-            style={{ height: '300px' }}
-          >
-            Please connect wallet.
-          </p>
-        )}
-      </Card>
-    </div>
+    <Card style={{ maxWidth: '450px' }} className='mx-auto px-4'>
+      <Card.Body>
+        <Card.Title>Approve Swap</Card.Title>
+        <Card.Text>
+          {isApproved 
+            ? "Swap has been approved for the contract."
+            : "Click the button below to approve the contract for swapping."}
+        </Card.Text>
+        <Button 
+          variant="dark" 
+          onClick={handleApprove}
+          disabled={isApproved || !account}
+        >
+          {isApproved ? "Approved" : "Approve Contract for Swap"}
+        </Button>
+      </Card.Body>
+    </Card>
   );
-}
+};
 
-export default Withdraw;
+export default Approve;
