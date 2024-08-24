@@ -27,6 +27,14 @@ contract AMM {
         uint256 timestamp
     );
 
+    // Add this mapping at the contract level
+    mapping(address => mapping(address => bool)) public swapApprovals;
+
+    // Add this function to allow/disallow addresses to swap on owner's behalf
+    function setSwapApproval(address _operator, bool _approved) external {
+        swapApprovals[msg.sender][_operator] = _approved;
+    }
+
     constructor(Token _token1, Token _token2) {
         token1 = _token1;
         token2 = _token2;
@@ -105,22 +113,26 @@ contract AMM {
         require(token2Amount < token2Balance, "swap amount to large");
     }
 
-    function swapToken1(uint256 _token1Amount)
-        external
-        returns(uint256 token2Amount)
-    {
+    function swapToken1(uint256 _token1Amount, address _owner) external returns(uint256 token2Amount) {
+        address swapper = msg.sender;
+        
+        if (_owner != address(0)) {
+            require(swapApprovals[_owner][msg.sender], "Not approved to swap on behalf of owner");
+            swapper = _owner;
+        }
+
         // Calculate Token 2 Amount
         token2Amount = calculateToken1Swap(_token1Amount);
 
         // Do Swap
-        token1.transferFrom(msg.sender, address(this), _token1Amount);
+        token1.transferFrom(swapper, address(this), _token1Amount);
         token1Balance += _token1Amount;
         token2Balance -= token2Amount;
-        token2.transfer(msg.sender, token2Amount);
+        token2.transfer(swapper, token2Amount);
 
         // Emit an event
         emit Swap(
-            msg.sender,
+            swapper,
             address(token1),
             _token1Amount,
             address(token2),
@@ -149,22 +161,26 @@ contract AMM {
         require(token1Amount < token1Balance, "swap amount to large");
     }
 
-    function swapToken2(uint256 _token2Amount)
-        external
-        returns(uint256 token1Amount)
-    {
+    function swapToken2(uint256 _token2Amount, address _owner) external returns(uint256 token1Amount) {
+        address swapper = msg.sender;
+        
+        if (_owner != address(0)) {
+            require(swapApprovals[_owner][msg.sender], "Not approved to swap on behalf of owner");
+            swapper = _owner;
+        }
+
         // Calculate Token 1 Amount
         token1Amount = calculateToken2Swap(_token2Amount);
 
         // Do Swap
-        token2.transferFrom(msg.sender, address(this), _token2Amount);
+        token2.transferFrom(swapper, address(this), _token2Amount);
         token2Balance += _token2Amount;
         token1Balance -= token1Amount;
-        token1.transfer(msg.sender, token1Amount);
+        token1.transfer(swapper, token1Amount);
 
         // Emit an event
         emit Swap(
-            msg.sender,
+            swapper,
             address(token2),
             _token2Amount,
             address(token1),
