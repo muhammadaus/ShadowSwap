@@ -1,21 +1,63 @@
-import { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react';
 import { BlockchainContext } from './App'
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
+import { ethers } from 'ethers';
+import AMMabi from '../abis/AMM.json';
+import Alert from 'react-bootstrap/Alert';
 
 const Withdraw = () => {
   const [amount, setAmount] = useState('')
   const { account } = useContext(BlockchainContext)
+  const [ammContract, setAmmContract] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const withdrawHandler = (e) => {
+  useEffect(() => {
+    const initializeContract = async () => {
+      if (typeof window.ethereum !== 'undefined' && account) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contractAddress = '0x5d4bf065A9ae8B5D8b9cb632C38c77d784d086Cc';
+        const contract = new ethers.Contract(contractAddress, AMMabi, signer);
+        setAmmContract(contract);
+      }
+    };
+    initializeContract();
+  }, [account]);
+
+  const withdrawHandler = async (e) => {
     e.preventDefault()
-    console.log('Withdraw amount:', amount)
-    // Here you would typically interact with the blockchain
-    // For now, we'll just log the value
-    setAmount('')
+    setError('');
+    setIsLoading(true);
+
+    if (!ammContract) {
+      setError('Contract not initialized');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+      setError('Please enter a valid amount');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const shareAmount = ethers.utils.parseUnits(amount, 18); // Assuming 18 decimals, adjust if different
+      const tx = await ammContract.removeLiquidity(shareAmount);
+      await tx.wait();
+      console.log('Liquidity removed successfully');
+      setAmount('');
+    } catch (error) {
+      console.error('Error removing liquidity:', error);
+      setError('Failed to remove liquidity. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -44,8 +86,12 @@ const Withdraw = () => {
             </Row>
 
             <Row className='my-3'>
-              <Button type='submit' variant="dark">Withdraw</Button>
+              <Button type='submit' variant="dark" disabled={isLoading}>
+                {isLoading ? 'Processing...' : 'Withdraw'}
+              </Button>
             </Row>
+
+            {error && <Alert variant="danger">{error}</Alert>}
 
             <hr />
 
