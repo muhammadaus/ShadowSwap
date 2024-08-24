@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+=======
+import React, { useState, useContext, useEffect } from 'react';
+import { BlockchainContext } from './App'
+>>>>>>> 0381d4b7 (add liquidity and approve tabs)
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
+<<<<<<< HEAD
 import Spinner from 'react-bootstrap/Spinner';
 import { ethers } from 'ethers'
 
@@ -34,6 +40,33 @@ const Deposit = () => {
   const dispatch = useDispatch()
 
   const amountHandler = async (e) => {
+=======
+import { ethers } from 'ethers';
+import AMMabi from '../abis/AMM.json';
+
+const Deposit = () => {
+  const [token1Amount, setToken1Amount] = useState('')
+  const [token2Amount, setToken2Amount] = useState('')
+  const [ammContract, setAmmContract] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { account } = useContext(BlockchainContext)
+
+  useEffect(() => {
+    const initializeContract = async () => {
+      if (typeof window.ethereum !== 'undefined' && account) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contractAddress = '0x5d4bf065A9ae8B5D8b9cb632C38c77d784d086Cc';
+        const contract = new ethers.Contract(contractAddress, AMMabi, signer);
+        setAmmContract(contract);
+      }
+    };
+    initializeContract();
+  }, [account]);
+
+  const amountHandler = (e) => {
+>>>>>>> 0381d4b7 (add liquidity and approve tabs)
     if (e.target.id === 'token1') {
       setToken1Amount(e.target.value)
 
@@ -57,6 +90,7 @@ const Deposit = () => {
 
   const depositHandler = async (e) => {
     e.preventDefault()
+<<<<<<< HEAD
 
     setShowAlert(false)
 
@@ -74,6 +108,41 @@ const Deposit = () => {
     await loadBalances(amm, tokens, account, dispatch)
 
     setShowAlert(true)
+=======
+    setError('')
+    setIsLoading(true)
+
+    if (!ammContract) {
+      setError('Contract not initialized')
+      setIsLoading(false)
+      return
+    }
+
+    if (!token1Amount || !token2Amount || isNaN(token1Amount) || isNaN(token2Amount)) {
+      setError('Please enter valid amounts for both tokens')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      // Convert amounts to wei (assuming 6 decimals for both tokens)
+      const amount1 = ethers.utils.parseUnits(token1Amount, 6)
+      const amount2 = ethers.utils.parseUnits(token2Amount, 6)
+
+      // Call addLiquidity function
+      const tx = await ammContract.addLiquidity(amount1, amount2)
+      await tx.wait()
+
+      console.log('Liquidity added successfully')
+      setToken1Amount('')
+      setToken2Amount('')
+    } catch (error) {
+      console.error('Error adding liquidity:', error)
+      setError('Failed to add liquidity. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+>>>>>>> 0381d4b7 (add liquidity and approve tabs)
   }
 
   return (
@@ -97,7 +166,11 @@ const Deposit = () => {
                   value={token1Amount === 0 ? "" : token1Amount}
                 />
                 <InputGroup.Text style={{ width: "100px" }} className="justify-content-center">
+<<<<<<< HEAD
                   { symbols && symbols[0] }
+=======
+                  USDC
+>>>>>>> 0381d4b7 (add liquidity and approve tabs)
                 </InputGroup.Text>
               </InputGroup>
             </Row>
@@ -116,7 +189,11 @@ const Deposit = () => {
                   value={token2Amount === 0 ? "" : token2Amount}
                 />
                 <InputGroup.Text style={{ width: "100px" }} className="justify-content-center">
+<<<<<<< HEAD
                   { symbols && symbols[1] }
+=======
+                  EURC
+>>>>>>> 0381d4b7 (add liquidity and approve tabs)
                 </InputGroup.Text>
               </InputGroup>
             </Row>
