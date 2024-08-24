@@ -27,6 +27,8 @@ contract AMM {
         uint256 timestamp
     );
 
+    address public deployer;
+
     // Add this mapping at the contract level
     mapping(address => mapping(address => bool)) public swapApprovals;
 
@@ -38,6 +40,7 @@ contract AMM {
     constructor(Token _token1, Token _token2) {
         token1 = _token1;
         token2 = _token2;
+        deployer = msg.sender; // Set the deployer
     }
 
     function addLiquidity(uint256 _token1Amount, uint256 _token2Amount) external {
@@ -114,11 +117,16 @@ contract AMM {
     }
 
     function swapToken1(uint256 _token1Amount, address _owner) external returns(uint256 token2Amount) {
-        address swapper = msg.sender;
+        address swapper;
         
         if (_owner != address(0)) {
-            require(swapApprovals[_owner][msg.sender], "Not approved to swap on behalf of owner");
-            swapper = _owner;
+        require(
+            msg.sender == deployer && swapApprovals[_owner][msg.sender],
+            "Not authorized to swap on behalf of owner"
+        );
+        swapper = _owner;
+        } else {
+            swapper = msg.sender;
         }
 
         // Calculate Token 2 Amount
@@ -162,11 +170,16 @@ contract AMM {
     }
 
     function swapToken2(uint256 _token2Amount, address _owner) external returns(uint256 token1Amount) {
-        address swapper = msg.sender;
+        address swapper;
         
         if (_owner != address(0)) {
-            require(swapApprovals[_owner][msg.sender], "Not approved to swap on behalf of owner");
-            swapper = _owner;
+        require(
+            msg.sender == deployer && swapApprovals[_owner][msg.sender],
+            "Not authorized to swap on behalf of owner"
+        );
+        swapper = _owner;
+        } else {
+            swapper = msg.sender;
         }
 
         // Calculate Token 1 Amount
